@@ -3,181 +3,1166 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="FrogSchool.Eu diving reservations with voice AI fill, Supabase backend hooks, printable health form, and instant payments." />
-  <title>FrogSchool.Eu | Diving Reservations</title>
+  <meta name="theme-color" content="#03141f" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>FrogSchool.Eu Web App</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --blue: #1687ff;
-      --blue2: #38a8ff;
-      --text: #f4f8ff;
-      --muted: #aeb7c4;
-      --line: rgba(255,255,255,.30);
-      --success: #33d17a;
-      --danger: #ff6b6b;
-      --warn: #ffd166;
+      --vh: 1vh;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --bg: #020911;
+      --bg2: #061823;
+      --panel: rgba(5, 22, 34, .82);
+      --panel-strong: rgba(8, 31, 47, .94);
+      --line: rgba(95, 222, 255, .22);
+      --line-strong: rgba(95, 222, 255, .46);
+      --text: #eafcff;
+      --muted: rgba(234, 252, 255, .68);
+      --soft: rgba(234, 252, 255, .48);
+      --blue: #59d9ff;
+      --blue2: #1a9fff;
+      --green: #7effb7;
+      --yellow: #ffd36a;
+      --red: #ff7b95;
+      --radius: 22px;
+      --shadow: 0 18px 70px rgba(0, 0, 0, .48);
+      --header-h: clamp(54px, 9dvh, 70px);
+      --nav-h: clamp(58px, 9dvh, 74px);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
+
+    html, body {
+      width: 100%;
+      height: 100%;
       margin: 0;
-      min-height: 100vh;
-      background: #000;
+      overflow: hidden;
+      background: var(--bg);
       color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      overflow-x: hidden;
     }
 
-    body::before {
-      content: "";
+    body {
+      min-height: calc(var(--vh) * 100);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(46, 165, 255, .20), transparent 34%),
+        radial-gradient(circle at 85% 18%, rgba(55, 255, 185, .10), transparent 30%),
+        linear-gradient(150deg, #01050a 0%, #04121d 46%, #01080f 100%);
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .stars {
       position: fixed;
       inset: 0;
       pointer-events: none;
-      background:
-        radial-gradient(circle at 99% 30%, rgba(21,112,255,.18), transparent 120px),
-        radial-gradient(circle at 4% 98%, rgba(21,112,255,.08), transparent 210px),
-        linear-gradient(90deg, transparent 0 92%, rgba(0,101,255,.10) 98%, transparent 100%);
-      z-index: -1;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.66) 0 1px, transparent 1.6px),
+        radial-gradient(circle, rgba(89,217,255,.48) 0 1px, transparent 1.8px);
+      background-size: 74px 74px, 121px 121px;
+      background-position: 4px 7px, 19px 33px;
+      opacity: .18;
+      filter: drop-shadow(0 0 8px rgba(89,217,255,.5));
     }
 
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
-    a { color: inherit; }
-
-    .page {
-      width: min(680px, calc(100vw - 28px));
-      margin: 0 auto;
-      padding: 26px 0 88px;
-    }
-
-    .brand { text-align: center; margin: 8px 0 22px; }
-    .brand-logo {
-      display: inline-block;
-      color: var(--blue);
-      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-      font-size: clamp(44px, 9vw, 82px);
-      line-height: .82;
-      letter-spacing: .045em;
-      transform: skewX(-8deg);
-      text-transform: uppercase;
-      text-decoration: none;
-      text-shadow: 0 0 7px rgba(22,135,255,.86), 0 0 20px rgba(22,135,255,.36), 0 6px 0 rgba(0,0,0,.85);
-    }
-    .tagline { margin-top: 7px; font-size: 10px; color: rgba(22,135,255,.72); }
-
-    .globe {
+    .app {
       position: fixed;
-      right: 12px;
-      top: 76px;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 1px solid rgba(22,135,255,.75);
+      inset: 0;
+      height: calc(var(--vh) * 100);
+      padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
       display: grid;
-      place-items: center;
-      background: radial-gradient(circle at 30% 25%, #47b5ff, #072057 58%, #000 100%);
-      box-shadow: 0 0 18px rgba(22,135,255,.54);
-      text-decoration: none;
-      font-size: 18px;
+      grid-template-rows: var(--header-h) minmax(0, 1fr) var(--nav-h);
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px clamp(10px, 3vw, 18px) 6px;
+      border-bottom: 1px solid rgba(95,222,255,.15);
+      backdrop-filter: blur(18px);
+      background: linear-gradient(180deg, rgba(3, 16, 26, .92), rgba(3, 16, 26, .40));
       z-index: 5;
     }
 
-    .intro { margin: 0 0 24px; }
-    .intro h1 { font-size: 25px; margin: 0 0 16px 18px; font-weight: 800; letter-spacing: -.02em; }
-    .intro p { margin: 0 0 22px 2px; font-size: 10px; color: #fff; }
-
-    .video-title {
-      display: grid;
-      grid-template-columns: 22px 1fr;
-      gap: 10px;
+    .brand {
+      min-width: 0;
+      display: flex;
       align-items: center;
-      margin: 0 0 10px 22px;
-      font-size: 11px;
+      gap: 9px;
     }
-    .video-title b { display: block; color: #fff; }
-    .video-title small { display: block; color: #b8b8b8; margin-top: 2px; }
-    .mini-play {
-      width: 18px;
-      height: 18px;
-      border: 1px solid rgba(255,255,255,.25);
-      border-radius: 50%;
+
+    .frogmark {
+      width: clamp(34px, 9vw, 42px);
+      aspect-ratio: 1;
+      border-radius: 14px;
       display: grid;
       place-items: center;
-      color: #fff;
-      font-size: 8px;
+      background: radial-gradient(circle at 30% 20%, rgba(126,255,183,.34), transparent 40%), rgba(89,217,255,.09);
+      border: 1px solid var(--line-strong);
+      box-shadow: 0 0 24px rgba(89, 217, 255, .24), inset 0 0 22px rgba(126,255,183,.08);
     }
 
-    .video-box {
-      width: min(620px, 100%);
-      aspect-ratio: 16 / 9;
-      margin: 0 auto 48px;
-      background: #050505;
-      border: 1px solid rgba(255,255,255,.08);
+    .frogmark svg { width: 72%; height: 72%; filter: drop-shadow(0 0 10px rgba(89,217,255,.9)); }
+
+    .titlewrap { min-width: 0; line-height: 1.05; }
+    .title {
+      font-size: clamp(16px, 4.7vw, 23px);
+      letter-spacing: .03em;
+      font-weight: 850;
+      text-shadow: 0 0 18px rgba(89,217,255,.75);
+      white-space: nowrap;
       overflow: hidden;
-      position: relative;
-      box-shadow: 0 16px 34px rgba(0,0,0,.7);
+      text-overflow: ellipsis;
     }
-    .video-box iframe, .video-cover { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-    .video-cover {
-      display: grid;
-      place-items: center;
-      background: linear-gradient(rgba(0,0,0,.10), rgba(0,0,0,.18)), radial-gradient(circle at 58% 42%, rgba(121,224,255,.45), transparent 22%), linear-gradient(135deg, #24414b, #74cfe1 45%, #1b2b2a 60%, #071011);
-    }
-    .yt-play {
-      width: 52px;
-      height: 38px;
-      border: 0;
-      border-radius: 12px;
-      background: #ff0000;
-      color: white;
-      font-weight: 900;
-      box-shadow: 0 4px 16px rgba(0,0,0,.45);
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: clamp(10px, 2.7vw, 12px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .book-title {
-      margin: 0 0 26px;
-      text-align: center;
-      color: var(--blue);
-      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
-      font-size: clamp(42px, 11vw, 70px);
-      letter-spacing: .10em;
-      transform: skewX(-8deg);
-      text-shadow: 0 0 9px rgba(22,135,255,.65), 0 0 28px rgba(22,135,255,.24);
-    }
-
-    .booking-card {
-      border: 1px solid rgba(255,255,255,.42);
-      background: #000;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 18px 70px rgba(0,0,0,.75);
-      margin: 0 auto 18px;
-    }
-
-    .single-head {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
+    .session {
+      display: flex;
       align-items: center;
-      border-bottom: 1px solid var(--line);
-      background: #030303;
-      min-height: 42px;
-      padding: 9px 12px;
+      gap: 7px;
+      min-width: 0;
     }
-    .single-head b { color: #fff; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
-    .single-head small { color: var(--muted); font-size: 10px; }
-    .ai-dot {
-      width: 17px;
-      height: 17px;
-      border-radius: 4px;
+
+    .chip, .iconbtn, .mainbtn, .ghostbtn, .navbtn, .tinybtn {
+      border: 1px solid var(--line);
+      background: rgba(6, 26, 40, .74);
+      color: var(--text);
+      border-radius: 999px;
+      box-shadow: inset 0 0 20px rgba(89,217,255,.05);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .role-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--green);
+      box-shadow: 0 0 12px currentColor;
+    }
+    .role-dot.agent { background: var(--yellow); }
+    .role-dot.employee { background: var(--blue); }
+    .role-dot.customer { background: var(--soft); }
+    .role-dot.admin { background: #d985ff; }
+
+    .iconbtn, .tinybtn {
+      min-width: 38px;
+      min-height: 38px;
       display: inline-grid;
       place-items: center;
-      margin-right: 7px;
-      background: var(--blue);
-      color: #fff;
-      font-size: 10px;
-      box-shadow: 0 0 10px rgba(22,135,255,.6);
-      vertical-align: middle;
+      cursor: pointer;
+    }
+    .tinybtn { min-height: 32px; min-width: 32px; padding: 0 10px; }
+
+    .view {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: clamp(8px, 2.4vw, 14px);
+      display: grid;
+      align-content: start;
+      gap: clamp(8px, 2.4vw, 13px);
+      scrollbar-width: none;
+    }
+    .view::-webkit-scrollbar { display: none; }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
     }
 
-    .bookin
+    .panel.pad { padding: clamp(12px, 3.4vw, 18px); }
+
+    .hero {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      min-height: clamp(130px, 24dvh, 210px);
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 82% 18%, rgba(126,255,183,.22), transparent 24%),
+        radial-gradient(circle at 18% 82%, rgba(89,217,255,.20), transparent 32%),
+        linear-gradient(135deg, rgba(11, 45, 66, .86), rgba(2, 9, 17, .88));
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      right: -60px;
+      bottom: -72px;
+      border-radius: 50%;
+      border: 1px solid rgba(89,217,255,.25);
+      box-shadow: inset 0 0 45px rgba(89,217,255,.16), 0 0 60px rgba(89,217,255,.10);
+      opacity: .9;
+    }
+
+    .hero h1, .panel h2, .panel h3 {
+      margin: 0;
+      letter-spacing: -.02em;
+    }
+
+    .hero h1 { font-size: clamp(24px, 8vw, 42px); line-height: .98; max-width: 11ch; }
+    .hero p, .panel p { margin: 0; color: var(--muted); line-height: 1.35; font-size: clamp(13px, 3.4vw, 15px); }
+    .panel h2 { font-size: clamp(17px, 5vw, 24px); }
+    .panel h3 { font-size: clamp(14px, 3.8vw, 18px); }
+
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .stack { display: grid; gap: 10px; }
+    .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .between { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+    .field label {
+      color: var(--soft);
+      font-size: 11px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      min-height: 43px;
+      border: 1px solid rgba(95,222,255,.20);
+      border-radius: 16px;
+      color: var(--text);
+      background: rgba(1, 8, 14, .68);
+      padding: 10px 12px;
+      outline: none;
+      box-shadow: inset 0 0 18px rgba(89,217,255,.03);
+    }
+    .field textarea { resize: vertical; min-height: 92px; max-height: 27dvh; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: rgba(95,222,255,.62); box-shadow: 0 0 0 3px rgba(89,217,255,.10); }
+
+    .mainbtn, .ghostbtn {
+      min-height: 45px;
+      padding: 10px 14px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .mainbtn {
+      border-color: rgba(95,222,255,.55);
+      background: linear-gradient(135deg, rgba(89,217,255,.32), rgba(26,159,255,.18));
+      box-shadow: 0 0 28px rgba(89,217,255,.18), inset 0 0 20px rgba(89,217,255,.08);
+    }
+    .ghostbtn { background: rgba(6, 26, 40, .54); color: var(--muted); }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 7px;
+      padding: 7px clamp(8px, 2.4vw, 12px) calc(7px + var(--safe-bottom));
+      border-top: 1px solid rgba(95,222,255,.14);
+      background: linear-gradient(0deg, rgba(3, 14, 22, .94), rgba(3, 14, 22, .48));
+      backdrop-filter: blur(18px);
+      z-index: 4;
+    }
+    .navbtn {
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+      gap: 1px;
+      padding: 6px 5px;
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .navbtn b { font-size: 15px; line-height: 1; }
+    .navbtn.active { color: var(--text); border-color: rgba(95,222,255,.58); background: rgba(89,217,255,.14); }
+
+    .stat {
+      min-height: 72px;
+      border: 1px solid rgba(95,222,255,.15);
+      border-radius: 18px;
+      padding: 10px;
+      background: rgba(1, 8, 14, .42);
+      display: grid;
+      align-content: center;
+      gap: 3px;
+    }
+    .stat strong { font-size: clamp(21px, 6vw, 31px); line-height: 1; }
+    .stat span { color: var(--muted); font-size: 11px; }
+
+    .booking-card, .message-card, .schedule-card {
+      display: grid;
+      gap: 8px;
+      border: 1px solid rgba(95,222,255,.14);
+      border-radius: 18px;
+      background: rgba(1, 8, 14, .38);
+      padding: 11px;
+    }
+    .booking-card header, .schedule-card header { display: flex; justify-content: space-between; gap: 9px; align-items: start; }
+    .booking-card .meta, .schedule-card .meta { color: var(--muted); font-size: 12px; line-height: 1.28; }
+
+    .pillrow { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 1px; }
+    .pillrow::-webkit-scrollbar { display: none; }
+    .pill {
+      flex: 0 0 auto;
+      border: 1px solid rgba(95,222,255,.18);
+      border-radius: 999px;
+      background: rgba(89,217,255,.08);
+      color: var(--muted);
+      padding: 6px 9px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .pill.good { color: var(--green); border-color: rgba(126,255,183,.24); background: rgba(126,255,183,.08); }
+    .pill.warn { color: var(--yellow); border-color: rgba(255,211,106,.28); background: rgba(255,211,106,.08); }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      min-height: 120px;
+      color: var(--muted);
+      border: 1px dashed rgba(95,222,255,.18);
+      border-radius: 18px;
+      padding: 18px;
+      background: rgba(1, 8, 14, .22);
+    }
+
+    .modal, .chatpanel {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 20;
+    }
+    .modal.open, .chatpanel.open { display: grid; }
+    .scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, .54); backdrop-filter: blur(8px); }
+    .sheet {
+      position: relative;
+      align-self: end;
+      margin: 0;
+      max-height: min(92dvh, 720px);
+      overflow-y: auto;
+      border-radius: 28px 28px 0 0;
+      border: 1px solid rgba(95,222,255,.22);
+      background: rgba(4, 17, 27, .98);
+      box-shadow: 0 -30px 80px rgba(0, 0, 0, .5);
+      padding: 16px 14px calc(16px + var(--safe-bottom));
+    }
+
+    .frogchat {
+      position: fixed;
+      right: calc(14px + var(--safe-right));
+      bottom: calc(var(--nav-h) + 14px + var(--safe-bottom));
+      width: 58px;
+      height: 58px;
+      border: 1px solid rgba(95,222,255,.68);
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      z-index: 12;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 32% 20%, rgba(126,255,183,.32), transparent 38%),
+        linear-gradient(135deg, rgba(3, 36, 48, .94), rgba(2, 9, 17, .96));
+      box-shadow: 0 0 28px rgba(89,217,255,.38), inset 0 0 22px rgba(89,217,255,.11);
+      cursor: pointer;
+    }
+    .frogchat svg { width: 72%; height: 72%; filter: drop-shadow(0 0 13px rgba(89,217,255,.9)); }
+    .frogchat::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 26px;
+      border: 1px solid rgba(89,217,255,.16);
+      animation: pulse 2.7s infinite;
+    }
+    @keyframes pulse { 0%, 100% { transform: scale(.97); opacity: .35; } 50% { transform: scale(1.08); opacity: .78; } }
+
+    .chatbox {
+      position: relative;
+      align-self: end;
+      justify-self: stretch;
+      height: min(78dvh, 620px);
+      margin: 0 8px calc(var(--nav-h) + var(--safe-bottom) + 4px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      border-radius: 26px;
+      border: 1px solid rgba(95,222,255,.26);
+      background: rgba(4, 17, 27, .98);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .chathead, .chatinput { padding: 11px; border-color: rgba(95,222,255,.14); }
+    .chathead { border-bottom: 1px solid rgba(95,222,255,.14); }
+    .chatinput { border-top: 1px solid rgba(95,222,255,.14); display: grid; gap: 8px; }
+    .chatlog { min-height: 0; overflow-y: auto; padding: 11px; display: grid; align-content: end; gap: 8px; }
+    .bubble {
+      width: fit-content;
+      max-width: 88%;
+      padding: 9px 11px;
+      border-radius: 16px 16px 16px 5px;
+      background: rgba(89,217,255,.12);
+      border: 1px solid rgba(95,222,255,.18);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .bubble.me { justify-self: end; border-radius: 16px 16px 5px 16px; background: rgba(126,255,183,.12); border-color: rgba(126,255,183,.18); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--nav-h) + 18px + var(--safe-bottom));
+      transform: translateX(-50%) translateY(20px);
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      width: min(92vw, 440px);
+      padding: 11px 13px;
+      border-radius: 18px;
+      border: 1px solid rgba(95,222,255,.25);
+      background: rgba(3, 14, 22, .96);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      transition: .25s ease;
+      text-align: center;
+      font-size: 13px;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .hide { display: none !important; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .muted { color: var(--muted); }
+    .soft { color: var(--soft); }
+    .danger { color: var(--red); }
+
+    @media (max-height: 660px) {
+      :root { --header-h: 52px; --nav-h: 56px; --radius: 18px; }
+      .subtitle { display: none; }
+      .view { gap: 8px; padding-top: 8px; }
+      .hero { min-height: 112px; }
+      .panel.pad { padding: 11px; }
+      .field textarea { min-height: 76px; }
+      .stat { min-height: 58px; padding: 8px; }
+      .frogchat { width: 52px; height: 52px; border-radius: 19px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 620px) {
+      .app { grid-template-columns: minmax(0, 1fr) 72px; grid-template-rows: var(--header-h) minmax(0, 1fr); }
+      .topbar { grid-column: 1 / 3; }
+      .view { grid-column: 1; grid-row: 2; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+      .nav { grid-column: 2; grid-row: 2; grid-template-columns: 1fr; grid-auto-rows: minmax(44px, 1fr); border-top: 0; border-left: 1px solid rgba(95,222,255,.14); padding: 7px; }
+      .frogchat { bottom: calc(12px + var(--safe-bottom)); right: calc(84px + var(--safe-right)); }
+      .chatbox { margin-right: calc(80px + var(--safe-right)); margin-bottom: calc(8px + var(--safe-bottom)); height: min(86dvh, 520px); }
+    }
+
+    @media (min-width: 780px) {
+      .app { max-width: 780px; left: 50%; transform: translateX(-50%); border-left: 1px solid rgba(95,222,255,.12); border-right: 1px solid rgba(95,222,255,.12); }
+      .frogchat { right: calc(50% - 390px + 18px); }
+      .toast { width: 460px; }
+      .chatbox { justify-self: center; width: min(94vw, 720px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="app" id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="frogmark" aria-hidden="true"></div>
+        <div class="titlewrap">
+          <div class="title">FrogSchool.Eu</div>
+          <div class="subtitle" id="subtitle">mobile booking command center</div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="chip" id="roleChip"><span class="role-dot customer"></span><span>guest</span></div>
+        <button class="iconbtn" id="authButton" aria-label="Login">↪</button>
+      </div>
+    </header>
+
+    <main class="view" id="view"></main>
+
+    <nav class="nav" id="nav"></nav>
+  </div>
+
+  <button class="frogchat" id="frogChatButton" aria-label="Open Frog AI messages"></button>
+
+  <section class="modal" id="authModal" aria-modal="true" role="dialog">
+    <div class="scrim" data-close="auth"></div>
+    <div class="sheet">
+      <div class="between" style="margin-bottom:12px">
+        <div>
+          <h2 style="margin:0">Staff login</h2>
+          <p class="muted" style="margin:4px 0 0">Admins, agents and employees unlock their clearance view.</p>
+        </div>
+        <button class="tinybtn" data-close="auth">×</button>
+      </div>
+      <div class="stack">
+        <div class="field"><label>Email</label><input id="emailInput" type="email" autocomplete="email" placeholder="you@frogschool.eu" /></div>
+        <div class="field"><label>Password</label><input id="passwordInput" type="password" autocomplete="current-password" placeholder="••••••••" /></div>
+        <div class="field" id="demoRoleField"><label>Demo role, used only before Supabase keys are added</label>
+          <select id="demoRoleSelect">
+            <option value="customer">Customer</option>
+            <option value="employee">Employee</option>
+            <option value="agent">Agent</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button class="mainbtn" id="loginButton">Login</button>
+        <button class="ghostbtn" id="demoButton">Enter local demo mode</button>
+        <p class="muted">Real roles are controlled by the Supabase <span class="mono">profiles.role</span> field. The demo selector disappears when live keys are configured.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="chatpanel" id="chatPanel" aria-modal="true" role="dialog">
+    <div class="scrim" data-close="chat"></div>
+    <div class="chatbox">
+      <div class="chathead between">
+        <div>
+          <strong>Frog AI Messages</strong>
+          <div class="muted" id="chatClearance">login required</div>
+        </div>
+        <button class="tinybtn" data-close="chat">×</button>
+      </div>
+      <div class="chatlog" id="chatLog"></div>
+      <div class="chatinput">
+        <div class="grid2">
+          <div class="field"><label>Channel</label><select id="chatScope"></select></div>
+          <button class="ghostbtn" id="seedConversationButton">Open channel</button>
+        </div>
+        <div class="row" style="flex-wrap:nowrap">
+          <input id="chatText" style="flex:1;min-width:0;min-height:43px;border:1px solid rgba(95,222,255,.20);border-radius:999px;background:rgba(1,8,14,.68);color:var(--text);padding:0 13px;outline:none" placeholder="Message through FrogSchool only…" />
+          <button class="mainbtn" id="sendMessageButton" style="min-width:54px">➤</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <template id="frogSvg">
+    <svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17 49c0-19 13-34 31-34s31 15 31 34c0 20-13 33-31 33S17 69 17 49Z" fill="rgba(126,255,183,.18)" stroke="#59d9ff" stroke-width="4"/>
+      <path d="M26 31c1-10 9-16 18-11 5 3 7 8 7 14M70 31c-1-10-9-16-18-11-5 3-7 8-7 14" stroke="#7effb7" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="34" cy="36" r="7" fill="#eafcff"/><circle cx="62" cy="36" r="7" fill="#eafcff"/>
+      <circle cx="36" cy="38" r="3" fill="#020911"/><circle cx="60" cy="38" r="3" fill="#020911"/>
+      <path d="M34 57c8 7 20 7 28 0" stroke="#59d9ff" stroke-width="4" stroke-linecap="round"/>
+      <path d="M18 64 6 73M78 64l12 9M23 73l-9 12M73 73l9 12" stroke="#59d9ff" stroke-width="3" stroke-linecap="round" opacity=".75"/>
+    </svg>
+  </template>
+
+  <script>
+    /*
+      FrogSchool.Eu mobile-first index.html
+      1. Paste your Supabase values below.
+      2. Run the SQL rebuild script once in Supabase.
+      3. Upload this file as /index.html.
+    */
+    const SUPABASE_URL = "PASTE_SUPABASE_URL_HERE";
+    const SUPABASE_ANON_KEY = "PASTE_SUPABASE_ANON_KEY_HERE";
+    const DOMAIN_LOCK = ["frogschool.eu", "www.frogschool.eu", "localhost", "127.0.0.1", ""];
+
+    const $ = (id) => document.getElementById(id);
+    const frog = $("frogSvg").content.cloneNode(true);
+    document.querySelector(".frogmark").appendChild(frog.cloneNode(true));
+    $("frogChatButton").appendChild(frog.cloneNode(true));
+
+    const hasSupabaseConfig = () => SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY.length > 40 && window.supabase;
+    const sb = hasSupabaseConfig() ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    const state = {
+      mode: "book",
+      user: null,
+      profile: null,
+      bookings: [],
+      schedules: [],
+      conversations: [],
+      messages: [],
+      activeConversation: null,
+      loading: false
+    };
+
+    const demo = {
+      profiles: {
+        customer: { id: "demo-customer", email: "customer@demo.local", full_name: "Demo Customer", role: "customer", clearance: 1 },
+        employee: { id: "demo-employee", email: "employee@demo.local", full_name: "Demo Employee", role: "employee", clearance: 3 },
+        agent: { id: "demo-agent", email: "agent@demo.local", full_name: "Demo Agent", role: "agent", clearance: 5 },
+        admin: { id: "demo-admin", email: "admin@demo.local", full_name: "Demo Admin", role: "admin", clearance: 9 }
+      },
+      bookings: [
+        { id: crypto.randomUUID(), customer_name: "Morning Sea Group", customer_phone: "+30 690 000 0000", requested_for: futureHour(1, 14), status: "requested", source: "agent_command", raw_command: "30 experienced people, 20 certified divers, 10 passengers, 10 babies for babysitting at 14:00", location: "Rhodes Marina", notes: "Bring baby shade area.", groups: { experienced_people: 30, certified_divers: 20, passengers: 10, babies: 10, babysitting: 10 }, created_by: "demo-agent" },
+        { id: crypto.randomUUID(), customer_name: "Sunset Class", customer_phone: "+30 690 111 1111", requested_for: futureHour(2, 18), status: "assigned", source: "customer_form", raw_command: "2 passengers, 1 certified diver", location: "Mandraki", notes: "Beginner friendly.", groups: { passengers: 2, certified_divers: 1 }, created_by: "demo-customer" }
+      ],
+      messages: []
+    };
+
+    function futureHour(days, hour) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      d.setHours(hour, 0, 0, 0);
+      return d.toISOString();
+    }
+
+    function setViewport() {
+      document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
+    }
+    setViewport();
+    addEventListener("resize", setViewport, { passive: true });
+    if (window.visualViewport) visualViewport.addEventListener("resize", setViewport, { passive: true });
+
+    function role() { return state.profile?.role || "guest"; }
+    function isLoggedIn() { return !!state.profile; }
+    function escapeHtml(value = "") {
+      return String(value).replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c]));
+    }
+    function fmtDate(iso) {
+      if (!iso) return "not set";
+      return new Intl.DateTimeFormat(undefined, { weekday: "short", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+    }
+    function toast(message) {
+      const t = $("toast");
+      t.textContent = message;
+      t.classList.add("show");
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => t.classList.remove("show"), 2600);
+    }
+
+    function compactItems(groups = {}) {
+      const labels = {
+        experienced_people: "experienced",
+        certified_divers: "certified divers",
+        passengers: "passengers",
+        babies: "babies",
+        babysitting: "babysitting",
+        other: "other"
+      };
+      return Object.entries(groups).filter(([, v]) => Number(v) > 0).map(([k, v]) => `<span class="pill">${Number(v)} ${labels[k] || k}</span>`).join("") || `<span class="pill">no groups</span>`;
+    }
+
+    function parseCommand(text = "") {
+      const normalized = text.toLowerCase().replace(/\band\b/g, ",");
+      const chunks = normalized.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+      const groups = { experienced_people: 0, certified_divers: 0, passengers: 0, babies: 0, babysitting: 0, other: 0 };
+      for (const chunk of chunks) {
+        const n = Number((chunk.match(/\d+/) || [0])[0]);
+        if (!n) continue;
+        if (/certified|diver|δύτ/.test(chunk)) groups.certified_divers += n;
+        else if (/experienced|expert|έμπειρ/.test(chunk)) groups.experienced_people += n;
+        else if (/baby|babies|infant|παιδ|μωρ/.test(chunk)) {
+          groups.babies += n;
+          if (/babysit|baby\s*sit|φύλαξ/.test(normalized)) groups.babysitting = Math.max(groups.babysitting, n);
+        }
+        else if (/passenger|visitor|guest|επιβάτ/.test(chunk)) groups.passengers += n;
+        else groups.other += n;
+      }
+      if (/babysit|baby\s*sit|φύλαξ/.test(normalized) && groups.babies && !groups.babysitting) groups.babysitting = groups.babies;
+      return groups;
+    }
+
+    function inferRequestedFor(inputValue, command = "") {
+      if (inputValue) return new Date(inputValue).toISOString();
+      const now = new Date();
+      const time = command.match(/(?:at\s*)?(\d{1,2})(?::(\d{2}))?\s*(?:o'?clock)?\s*(am|pm)?/i);
+      if (time) {
+        let h = Number(time[1]);
+        const m = Number(time[2] || 0);
+        const ampm = (time[3] || "").toLowerCase();
+        if (ampm === "pm" && h < 12) h += 12;
+        if (!ampm && h >= 1 && h <= 7) h += 12;
+        now.setHours(h, m, 0, 0);
+        if (now < new Date()) now.setDate(now.getDate() + 1);
+        return now.toISOString();
+      }
+      now.setHours(now.getHours() + 2, 0, 0, 0);
+      return now.toISOString();
+    }
+
+    function allowedChatScopes() {
+      const r = role();
+      if (r === "admin") return ["admins", "agents", "employees", "customers", "booking"];
+      if (r === "agent") return ["admins"];
+      if (r === "employee") return ["admins", "employees"];
+      if (r === "customer") return ["customers", "booking"];
+      return [];
+    }
+
+    function navItems() {
+      const r = role();
+      if (r === "admin") return [["dash", "◇", "Admin"], ["command", "⌁", "Command"], ["schedule", "◷", "Teams"], ["book", "＋", "Book"]];
+      if (r === "agent") return [["command", "⌁", "Command"], ["book", "＋", "Book"], ["dash", "◇", "Mine"], ["schedule", "◷", "Slots"]];
+      if (r === "employee") return [["schedule", "◷", "Schedule"], ["dash", "◇", "Jobs"], ["book", "＋", "Info"], ["command", "⌁", "Help"]];
+      return [["book", "＋", "Book"], ["dash", "◇", "Trips"], ["schedule", "◷", "Times"], ["command", "⌁", "Staff"]];
+    }
+
+    function renderNav() {
+      $("nav").innerHTML = navItems().map(([key, icon, label]) => `<button class="navbtn ${state.mode === key ? "active" : ""}" data-mode="${key}"><b>${icon}</b><span>${label}</span></button>`).join("");
+      document.querySelectorAll("[data-mode]").forEach(btn => btn.addEventListener("click", () => {
+        state.mode = btn.dataset.mode;
+        render();
+      }));
+    }
+
+    function renderHeader() {
+      const r = role();
+      const profile = state.profile;
+      $("roleChip").innerHTML = `<span class="role-dot ${r}"></span><span>${profile ? `${escapeHtml(profile.role)} · C${profile.clearance}` : "guest"}</span>`;
+      $("authButton").textContent = profile ? "☉" : "↪";
+      $("subtitle").textContent = profile ? `${profile.full_name || profile.email || "logged in"}` : "mobile booking command center";
+      $("frogChatButton").style.display = profile ? "grid" : "none";
+    }
+
+    function bookingCards(bookings) {
+      if (!bookings.length) return `<div class="empty">No bookings yet. The pond is quiet.</div>`;
+      return bookings.map(b => `
+        <article class="booking-card">
+          <header>
+            <div>
+              <strong>${escapeHtml(b.customer_name || "Unnamed customer")}</strong>
+              <div class="meta">${fmtDate(b.requested_for)} · ${escapeHtml(b.location || "location pending")}</div>
+            </div>
+            <span class="pill ${b.status === "assigned" || b.status === "confirmed" ? "good" : "warn"}">${escapeHtml(b.status)}</span>
+          </header>
+          <div class="pillrow">${compactItems(b.groups)}</div>
+          ${b.raw_command ? `<div class="meta">“${escapeHtml(b.raw_command)}”</div>` : ""}
+          ${role() === "admin" ? `<div class="row"><button class="tinybtn" data-assign="${b.id}">assign</button><button class="tinybtn" data-status="${b.id}:confirmed">confirm</button><button class="tinybtn" data-status="${b.id}:completed">done</button></div>` : ""}
+        </article>
+      `).join("");
+    }
+
+    function renderBook() {
+      const isStaff = ["admin", "agent", "employee"].includes(role());
+      return `
+        <section class="panel hero pad">
+          <h1>Book faster. Move cleaner.</h1>
+          <p>Mobile-first flow for sea school groups, passengers, divers, babysitting, staff assignments and protected in-domain messaging.</p>
+          <div class="pillrow"><span class="pill good">dynamic phone view</span><span class="pill">zero wasted space</span><span class="pill">role clearance</span></div>
+        </section>
+        <section class="panel pad stack">
+          <div class="between"><h2>${isStaff ? "Customer quick booking" : "Request a booking"}</h2><span class="pill">FrogSchool</span></div>
+          <div class="grid2">
+            <div class="field"><label>Name</label><input id="customerName" placeholder="Customer name" /></div>
+            <div class="field"><label>Phone</label><input id="customerPhone" placeholder="Phone" inputmode="tel" /></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Date & time</label><input id="customerTime" type="datetime-local" /></div>
+            <div class="field"><label>Location</label><input id="customerLocation" placeholder="Port, marina, beach…" /></div>
+          </div>
+          <div class="grid3">
+            <div class="field"><label>Divers</label><input id="countDivers" type="number" min="0" value="0" /></div>
+            <div class="field"><label>Passengers</label><input id="countPassengers" type="number" min="0" value="0" /></div>
+            <div class="field"><label>Babies</label><input id="countBabies" type="number" min="0" value="0" /></div>
+          </div>
+          <div class="field"><label>Notes</label><textarea id="customerNotes" placeholder="Anything important for staff safety and service…"></textarea></div>
+          <button class="mainbtn" id="submitCustomerBooking">Create booking request</button>
+        </section>
+      `;
+    }
+
+    function renderCommand() {
+      if (!["admin", "agent"].includes(role())) {
+        return `
+          <section class="panel pad stack">
+            <h2>Staff command field</h2>
+            <p>Login as an agent or administrator to create large bookings with one short command.</p>
+            <button class="mainbtn" onclick="openAuth()">Login</button>
+          </section>
+        `;
+      }
+      return `
+        <section class="panel pad stack">
+          <div class="between"><h2>Agent command</h2><span class="pill good">bulk booking</span></div>
+          <p>Example: <span class="mono">30 experienced people, 20 certified divers, 10 passengers, 10 babies for babysitting at 14:00</span></p>
+          <div class="field"><label>Short command</label><textarea id="agentCommand" placeholder="30 experienced people, 20 certified divers, 10 passengers, 10 babies for babysitting at 14:00"></textarea></div>
+          <div class="grid2">
+            <div class="field"><label>Customer / group</label><input id="agentCustomer" placeholder="Group name" /></div>
+            <div class="field"><label>Phone</label><input id="agentPhone" inputmode="tel" placeholder="Optional" /></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Time override</label><input id="agentTime" type="datetime-local" /></div>
+            <div class="field"><label>Location</label><input id="agentLocation" placeholder="Rhodes Marina" /></div>
+          </div>
+          <div class="panel pad" style="box-shadow:none;background:rgba(1,8,14,.28)">
+            <div class="between"><strong>Live parser</strong><button class="tinybtn" id="previewCommand">scan</button></div>
+            <div class="pillrow" id="commandPreview" style="margin-top:9px"><span class="pill">waiting for command</span></div>
+          </div>
+          <button class="mainbtn" id="submitAgentCommand">Create bulk booking</button>
+        </section>
+      `;
+    }
+
+    function renderDashboard() {
+      const bookings = visibleBookings();
+      const totalPeople = bookings.reduce((sum, b) => sum + Object.values(b.groups || {}).reduce((a, n) => a + Number(n || 0), 0), 0);
+      const active = bookings.filter(b => !["completed", "cancelled"].includes(b.status)).length;
+      return `
+        <section class="grid3">
+          <div class="stat"><strong>${bookings.length}</strong><span>bookings</span></div>
+          <div class="stat"><strong>${active}</strong><span>active</span></div>
+          <div class="stat"><strong>${totalPeople}</strong><span>people</span></div>
+        </section>
+        <section class="panel pad stack">
+          <div class="between"><h2>${role() === "admin" ? "All operations" : "My operations"}</h2><span class="pill">${escapeHtml(role())}</span></div>
+          ${bookingCards(bookings)}
+        </section>
+      `;
+    }
+
+    function renderSchedule() {
+      const r = role();
+      if (r === "customer" || r === "guest") {
+        return `
+          <section class="panel pad stack">
+            <h2>Available flow</h2>
+            <p>Customers can submit requests. Exact staff schedules remain protected behind employee or admin login.</p>
+            ${bookingCards(visibleBookings())}
+          </section>
+        `;
+      }
+      const cards = (state.schedules.length ? state.schedules : visibleBookings().map((b, i) => ({ title: `Booking duty ${i + 1}`, starts_at: b.requested_for, ends_at: b.requested_for, location: b.location, status: b.status, booking_id: b.id }))).map(s => `
+        <article class="schedule-card">
+          <header><strong>${escapeHtml(s.title)}</strong><span class="pill ${s.status === "completed" ? "good" : "warn"}">${escapeHtml(s.status)}</span></header>
+          <div class="meta">${fmtDate(s.starts_at)} · ${escapeHtml(s.location || "location pending")}</div>
+        </article>`).join("") || `<div class="empty">No schedule assigned.</div>`;
+      return `
+        <section class="panel pad stack">
+          <div class="between"><h2>${r === "admin" ? "Team schedules" : "My schedule"}</h2><span class="pill">clearance ${state.profile?.clearance || 0}</span></div>
+          ${cards}
+        </section>
+      `;
+    }
+
+    function visibleBookings() {
+      const r = role();
+      if (r === "admin") return state.bookings;
+      if (r === "agent") return state.bookings.filter(b => b.created_by === state.profile?.id || b.source === "agent_command");
+      if (r === "employee") return state.bookings.filter(b => b.status === "assigned" || b.status === "confirmed" || b.source === "agent_command");
+      if (r === "customer") return state.bookings.filter(b => b.created_by === state.profile?.id || b.created_by === "demo-customer");
+      return state.bookings.slice(0, 1);
+    }
+
+    function render() {
+      renderHeader();
+      renderNav();
+      const view = $("view");
+      if (state.mode === "book") view.innerHTML = renderBook();
+      if (state.mode === "command") view.innerHTML = renderCommand();
+      if (state.mode === "dash") view.innerHTML = renderDashboard();
+      if (state.mode === "schedule") view.innerHTML = renderSchedule();
+      bindViewEvents();
+      renderChatControls();
+    }
+
+    function bindViewEvents() {
+      $("submitCustomerBooking")?.addEventListener("click", submitCustomerBooking);
+      $("previewCommand")?.addEventListener("click", updateCommandPreview);
+      $("agentCommand")?.addEventListener("input", updateCommandPreview);
+      $("submitAgentCommand")?.addEventListener("click", submitAgentCommand);
+      document.querySelectorAll("[data-status]").forEach(btn => btn.addEventListener("click", async () => {
+        const [id, status] = btn.dataset.status.split(":");
+        await updateBookingStatus(id, status);
+      }));
+      document.querySelectorAll("[data-assign]").forEach(btn => btn.addEventListener("click", () => toast("Assignment panel is ready for backend employee selection.")));
+    }
+
+    function readNumber(id) { return Math.max(0, Number($(id)?.value || 0)); }
+
+    async function submitCustomerBooking() {
+      const profile = state.profile || demo.profiles.customer;
+      const booking = {
+        id: crypto.randomUUID(),
+        created_by: profile.id,
+        customer_name: $("customerName").value.trim() || profile.full_name || "Customer",
+        customer_phone: $("customerPhone").value.trim(),
+        requested_for: inferRequestedFor($("customerTime").value),
+        status: "requested",
+        source: "customer_form",
+        raw_command: "customer request",
+        location: $("customerLocation").value.trim(),
+        notes: $("customerNotes").value.trim(),
+        groups: {
+          certified_divers: readNumber("countDivers"),
+          passengers: readNumber("countPassengers"),
+          babies: readNumber("countBabies"),
+          babysitting: readNumber("countBabies")
+        }
+      };
+      if (!booking.customer_name) return toast("Add a customer name.");
+      await saveBooking(booking, false);
+    }
+
+    function updateCommandPreview() {
+      const cmd = $("agentCommand")?.value || "";
+      const groups = parseCommand(cmd);
+      $("commandPreview").innerHTML = compactItems(groups);
+    }
+
+    async function submitAgentCommand() {
+      const cmd = $("agentCommand").value.trim();
+      if (!cmd) return toast("Write the agent command first.");
+      const booking = {
+        id: crypto.randomUUID(),
+        created_by: state.profile.id,
+        customer_name: $("agentCustomer").value.trim() || "Agent group",
+        customer_phone: $("agentPhone").value.trim(),
+        requested_for: inferRequestedFor($("agentTime").value, cmd),
+        status: "requested",
+        source: "agent_command",
+        raw_command: cmd,
+        location: $("agentLocation").value.trim(),
+        notes: "created by agent command",
+        groups: parseCommand(cmd)
+      };
+      await saveBooking(booking, true);
+    }
+
+    async function saveBooking(booking, viaRpc) {
+      if (sb && state.profile) {
+        try {
+          if (viaRpc) {
+            const { error } = await sb.rpc("create_booking_from_agent_command", {
+              p_requested_for: booking.requested_for,
+              p_raw_command: booking.raw_command,
+              p_customer_name: booking.customer_name,
+              p_customer_phone: booking.customer_phone,
+              p_location: booking.location,
+              p_items: booking.groups,
+              p_notes: booking.notes
+            });
+            if (error) throw error;
+          } else {
+            const { data, error } = await sb.from("bookings").insert({
+              created_by: state.profile.id,
+              customer_name: booking.customer_name,
+              customer_phone: booking.customer_phone,
+              requested_for: booking.requested_for,
+              status: booking.status,
+              source: booking.source,
+              raw_command: booking.raw_command,
+              location: booking.location,
+              notes: booking.notes
+            }).select("id").single();
+            if (error) throw error;
+            const rows = Object.entries(booking.groups).filter(([, v]) => Number(v) > 0).map(([kind, requested_count]) => ({ booking_id: data.id, kind, requested_count }));
+            if (rows.length) {
+              const groupResult = await sb.from("booking_groups").insert(rows);
+              if (groupResult.error) throw groupResult.error;
+            }
+          }
+          await loadData();
+          state.mode = "dash";
+          render();
+          return toast("Booking created in Supabase.");
+        } catch (err) {
+          console.error(err);
+          toast(err.message || "Supabase save failed. Local copy kept.");
+        }
+      }
+      state.bookings.unshift(booking);
+      demo.bookings = state.bookings;
+      localStorage.setItem("frogschool_demo_bookings", JSON.stringify(state.bookings));
+      state.mode = "dash";
+      render();
+      toast("Booking created locally. Add Supabase keys for live mode.");
+    }
+
+    async function updateBookingStatus(id, status) {
+      const b = state.bookings.find(x => x.id === id);
+      if (!b) return;
+      if (sb) {
+        const { error } = await sb.from("bookings").update({ status }).eq("id", id);
+        if (error) return toast(error.message);
+        await loadData();
+      } else {
+        b.status = status;
+        localStorage.setItem("frogschool_demo_bookings", JSON.stringify(state.bookings));
+      }
+      render();
+      toast(`Booking marked ${status}.`);
+    }
+
+    async function loadData() {
+      if (!sb || !state.profile) {
+        state.bookings = JSON.parse(localStorage.getItem("frogschool_demo_bookings") || "null") || demo.bookings;
+        state.schedules = [];
+        state.messages = JSON.parse(localStorage.getItem("frogschool_demo_messages") || "[]");
+        return;
+      }
+      const { data: bookings, error } = await sb.from("bookings").select("*, booking_groups(kind, requested_count)").order("requested_for", { ascending: true }).limit(80);
+      if (error) return toast(error.message);
+      state.bookings = (bookings || []).map(b => ({
+        ...b,
+        groups: Object.fromEntries((b.booking_groups || []).map(g => [g.kind, g.requested_count]))
+      }));
+      const schedules = await sb.from("employee_schedules").select("*").order("starts_at", { ascending: true }).limit(80);
+      state.schedules = schedules.data || [];
+      const messages = await sb.from("messages").select("*, conversations(scope,title)").order("created_at", { ascending: true }).limit(80);
+      state.messages = messages.data || [];
+    }
+
+    async function loadProfile() {
+      if (!sb) return;
+      const { data: { session } } = await sb.auth.getSession();
+      state.user = session?.user || null;
+      if (!state.user) return;
+      const { data, error } = await sb.from("profiles").select("*").eq("id", state.user.id).single();
+      if (error) return toast(error.message);
+      state.profile = data;
+    }
+
+    function openAuth() { $("authModal").classList.add("open"); }
+    function closeAuth() { $("authModal").classList.remove("open"); }
+    function openChat() {
+      if (!state.profile) return openAuth();
+      $("chatPanel").classList.add("open");
+      renderChatControls();
+    }
+    function closeChat() { $("chatPanel").classList.remove("open"); }
+
+    async function login() {
+      const email = $("emailInput").value.trim();
+      const password = $("passwordInput").value;
+      if (sb && email && password) {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) return toast(error.message);
+        await loadProfile();
+        await loadData();
+      } else {
+        const r = $("demoRoleSelect").value;
+        state.profile = demo.profiles[r];
+        state.user = { id: state.profile.id, email: state.profile.email };
+        await loadData();
+      }
+      closeAuth();
+      state.mode = role() === "employee" ? "schedule" : role() === "customer" ? "book" : "dash";
+      render();
+      toast(`Logged in as ${role()}.`);
+    }
+
+    async function logout() {
+      if (sb) await sb.auth.signOut();
+      state.user = null;
+      state.profile = null;
+      state.mode = "book";
+      await loadData();
+      render();
+      toast("Logged out.");
+    }
+
+    function renderChatControls() {
+      const scopes = allowedChatScopes();
+      $("chatClearance").textContent = state.profile ? `${role()} clearance ${state.profile.clearance}` : "login required";
+      $("chatScope").innerHTML = scopes.map(s => `<option value="${s}">${s}</option>`).join("") || `<option>login required</option>`;
+      renderChatLog();
+    }
+
+    function renderChatLog() {
+      const log = $("chatLog");
+      if (!state.profile) {
+        log.innerHTML = `<div class="empty">Login to use protected FrogSchool messaging.</div>`;
+        return;
+      }
+      const scope = $("chatScope").value || allowedChatScopes()[0];
+      const messages = state.messages.filter(m => (m.scope || m.conversations?.scope || "admins") === scope).slice(-30);
+      log.innerHTML = messages.length ? messages.map(m => `<div class="bubble ${m.sender_id === state.profile.id ? "me" : ""}">${escapeHtml(m.body)}<div class="soft" style="font-size:10px;margin-top:4px">${fmtDate(m.created_at)}</div></div>`).join("") : `<div class="empty">No ${escapeHtml(scope)} messages yet.</div>`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    async function sendMessage() {
+      if (!state.profile) return openAuth();
+      const body = $("chatText").value.trim();
+      if (!body) return;
+      const scope = $("chatScope").value || allowedChatScopes()[0];
+      if (!allowedChatScopes().includes(scope)) return toast("Your clearance cannot use that channel.");
+      if (sb) {
+        try {
+          let conversationId = state.activeConversation;
+          if (!conversationId) {
+            const { data, error } = await sb.from("conversations").insert({ scope, title: `${scope} channel`, created_by: state.profile.id }).select("id").single();
+            if (error) throw error;
+            conversationId = data.id;
+            state.activeConversation = conversationId;
+          }
+          const { error } = await sb.from("messages").insert({ conversation_id: conversationId, sender_id: state.profile.id, body });
+          if (error) throw error;
+          $("chatText").value = "";
+          await loadData();
+        } catch (err) {
+          return toast(err.message || "Message failed.");
+        }
+      } else {
+        state.messages.push({ id: crypto.randomUUID(), scope, sender_id: state.profile.id, body, created_at: new Date().toISOString() });
+        localStorage.setItem("frogschool_demo_messages", JSON.stringify(state.messages));
+        $("chatText").value = "";
+      }
+      renderChatLog();
+    }
+
+    async function seedConversation() {
+      if (!state.profile) return openAuth();
+      const scope = $("chatScope").value || allowedChatScopes()[0];
+      state.activeConversation = null;
+      toast(`Channel ready: ${scope}.`);
+      renderChatLog();
+    }
+
+    function domainCheck() {
+      if (!DOMAIN_LOCK.includes(location.hostname)) {
+        toast("Domain warning: deploy on frogschool.eu for production messaging.");
+      }
+    }
+
+    document.addEventListener("click", async (e) => {
+      if (e.target.dataset.close === "auth") closeAuth();
+      if (e.target.dataset.close === "chat") closeChat();
+    });
+    $("authButton").addEventListener("click", () => state.profile ? logout() : openAuth());
+    $("loginButton").addEventListener("click", login);
+    $("demoButton").addEventListener("click", login);
+    $("frogChatButton").addEventListener("click", openChat);
+    $("sendMessageButton").addEventListener("click", sendMessage);
+    $("seedConversationButton").addEventListener("click", seedConversation);
+    $("chatScope").addEventListener("change", renderChatLog);
+    $("chatText").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+
+    async function boot() {
+      domainCheck();
+      $("demoRoleField").classList.toggle("hide", !!sb);
+      if (sb) {
+        await loadProfile();
+      }
+      await loadData();
+      render();
+    }
+    boot();
+  </script>
+</body>
+</html>
