@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="FrogSchool.Eu diving reservations with voice AI fill, Supabase backend hooks, printable health form, and instant payments." />
+  <title>FrogSchool.Eu | Diving Reservations</title>
+  <style>
+    :root {
+      --blue: #1687ff;
+      --blue2: #38a8ff;
+      --text: #f4f8ff;
+      --muted: #aeb7c4;
+      --line: rgba(255,255,255,.30);
+      --success: #33d17a;
+      --danger: #ff6b6b;
+      --warn: #ffd166;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #000;
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 99% 30%, rgba(21,112,255,.18), transparent 120px),
+        radial-gradient(circle at 4% 98%, rgba(21,112,255,.08), transparent 210px),
+        linear-gradient(90deg, transparent 0 92%, rgba(0,101,255,.10) 98%, transparent 100%);
+      z-index: -1;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+
+    .page {
+      width: min(680px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 26px 0 88px;
+    }
+
+    .brand { text-align: center; margin: 8px 0 22px; }
+    .brand-logo {
+      display: inline-block;
+      color: var(--blue);
+      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+      font-size: clamp(44px, 9vw, 82px);
+      line-height: .82;
+      letter-spacing: .045em;
+      transform: skewX(-8deg);
+      text-transform: uppercase;
+      text-decoration: none;
+      text-shadow: 0 0 7px rgba(22,135,255,.86), 0 0 20px rgba(22,135,255,.36), 0 6px 0 rgba(0,0,0,.85);
+    }
+    .tagline { margin-top: 7px; font-size: 10px; color: rgba(22,135,255,.72); }
+
+    .globe {
+      position: fixed;
+      right: 12px;
+      top: 76px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(22,135,255,.75);
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 30% 25%, #47b5ff, #072057 58%, #000 100%);
+      box-shadow: 0 0 18px rgba(22,135,255,.54);
+      text-decoration: none;
+      font-size: 18px;
+      z-index: 5;
+    }
+
+    .intro { margin: 0 0 24px; }
+    .intro h1 { font-size: 25px; margin: 0 0 16px 18px; font-weight: 800; letter-spacing: -.02em; }
+    .intro p { margin: 0 0 22px 2px; font-size: 10px; color: #fff; }
+
+    .video-title {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 10px 22px;
+      font-size: 11px;
+    }
+    .video-title b { display: block; color: #fff; }
+    .video-title small { display: block; color: #b8b8b8; margin-top: 2px; }
+    .mini-play {
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 8px;
+    }
+
+    .video-box {
+      width: min(620px, 100%);
+      aspect-ratio: 16 / 9;
+      margin: 0 auto 48px;
+      background: #050505;
+      border: 1px solid rgba(255,255,255,.08);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 16px 34px rgba(0,0,0,.7);
+    }
+    .video-box iframe, .video-cover { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .video-cover {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(rgba(0,0,0,.10), rgba(0,0,0,.18)), radial-gradient(circle at 58% 42%, rgba(121,224,255,.45), transparent 22%), linear-gradient(135deg, #24414b, #74cfe1 45%, #1b2b2a 60%, #071011);
+    }
+    .yt-play {
+      width: 52px;
+      height: 38px;
+      border: 0;
+      border-radius: 12px;
+      background: #ff0000;
+      color: white;
+      font-weight: 900;
+      box-shadow: 0 4px 16px rgba(0,0,0,.45);
+    }
+
+    .book-title {
+      margin: 0 0 26px;
+      text-align: center;
+      color: var(--blue);
+      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+      font-size: clamp(42px, 11vw, 70px);
+      letter-spacing: .10em;
+      transform: skewX(-8deg);
+      text-shadow: 0 0 9px rgba(22,135,255,.65), 0 0 28px rgba(22,135,255,.24);
+    }
+
+    .booking-card {
+      border: 1px solid rgba(255,255,255,.42);
+      background: #000;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 18px 70px rgba(0,0,0,.75);
+      margin: 0 auto 18px;
+    }
+
+    .single-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: #030303;
+      min-height: 42px;
+      padding: 9px 12px;
+    }
+    .single-head b { color: #fff; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+    .single-head small { color: var(--muted); font-size: 10px; }
+    .ai-dot {
+      width: 17px;
+      height: 17px;
+      border-radius: 4px;
+      display: inline-grid;
+      place-items: center;
+      margin-right: 7px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 10px;
+      box-shadow: 0 0 10px rgba(22,135,255,.6);
+      vertical-align: middle;
+    }
+
+    .bookin
