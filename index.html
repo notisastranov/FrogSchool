@@ -993,15 +993,15 @@ main#top > .grid.two {
               <div class="youtube-placeholder" id="youtubePlaceholder">
                 <div class="play" aria-hidden="true"></div>
                 <strong>Astranov.Eu FrogSchool.Eu</strong>
-                <span>YouTube video container</span>
+                <span>YouTube channel container</span>
               </div>
             </div>
             <div class="video-copy">
               <h3>Training. Knowledge. Experience.</h3>
-              <p>This is the main video position. Connect the real YouTube embed URL in <b>CONFIG.youtubeUrl</b> and the video will load here.</p>
+              <p>This is the main video position. Your official YouTube channel is connected. Add a specific video embed URL in <b>CONFIG.youtubeUrl</b> later if you want an embedded video here.</p>
               <div class="video-actions">
                 <button class="primary-btn" type="button" onclick="loadYouTubeVideo()">Load video</button>
-                <button class="ghost-btn" type="button" onclick="toast('Add your real YouTube channel or video embed URL inside CONFIG.youtubeUrl.')">Channel setup</button>
+                <button class="ghost-btn" type="button" onclick="openYouTubeChannel()">Open channel</button>
               </div>
             </div>
           </div>
@@ -1205,6 +1205,7 @@ main#top > .grid.two {
       storageKey: "frogschool_reservations_v1",
       userKey: "frogschool_current_user_v1",
       youtubeUrl: "",
+      youtubeChannelUrl: "https://www.youtube.com/@notisastranov",
       instructors: ["Marina", "Nikolas", "Eleni", "Captain Notis"],
       agents: ["Direct", "Aegean Desk", "Hotel Partner", "Harbor Office"]
     };
@@ -1768,13 +1769,19 @@ main#top > .grid.two {
     }
 
 
+
+    function openYouTubeChannel(){
+      const url = CONFIG.youtubeChannelUrl || "https://www.youtube.com/@notisastranov";
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
     function loadYouTubeVideo(){
       const frame = document.getElementById("youtubeFrame");
       const shell = document.querySelector(".youtube-frame-shell");
       if(!frame || !shell) return;
       const url = CONFIG.youtubeUrl || "";
       if(!url){
-        toast("Set CONFIG.youtubeUrl to your YouTube embed URL first.");
+        toast("Opening your YouTube channel. Add a specific video URL to CONFIG.youtubeUrl later for embedded playback."); openYouTubeChannel();
         return;
       }
       frame.src = normalizeYouTubeUrl(url);
