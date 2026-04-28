@@ -134,46 +134,6 @@ input, select, textarea, .panel, .video, .tableWrap, .role, .helper {
   border-radius: 16px !important;
 }
 
-
-/* Sound-start welcome video button */
-.videoStartButton{
-  position:absolute;
-  z-index:5;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  min-width:min(92%,520px);
-  min-height:72px;
-  border:2px solid rgba(255,90,90,.95);
-  border-radius:18px;
-  background:linear-gradient(180deg,#ff2438,#8b000e);
-  color:#57d0ff!important;
-  font-family:var(--display)!important;
-  font-size:clamp(16px,4vw,28px);
-  font-weight:900;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  text-shadow:0 0 9px rgba(87,208,255,.95),0 0 18px rgba(87,208,255,.45)!important;
-  box-shadow:0 0 30px rgba(255,30,50,.45),0 0 24px rgba(87,208,255,.22);
-}
-.video.playing .videoStartButton,
-.video.playing .empty{
-  display:none!important;
-}
-.video .channelLink{
-  position:absolute;
-  z-index:6;
-  right:10px;
-  top:10px;
-  border:1px solid rgba(87,208,255,.40);
-  border-radius:14px;
-  padding:9px 12px;
-  background:rgba(0,8,18,.72);
-  color:var(--blue)!important;
-  font-weight:900;
-  text-transform:uppercase;
-}
-
 </style>
 </head>
 <body>
@@ -202,8 +162,7 @@ input, select, textarea, .panel, .video, .tableWrap, .role, .helper {
 <div class="body">
 <div class="video" id="videoBox">
 <div class="empty">YouTube Channel</div>
-<button class="videoStartButton" id="playSoundBtn" type="button">▶ Play Welcome Video With Sound</button>
-<a class="channelLink" href="https://www.youtube.com/@notisastranov" target="_blank" rel="noopener">Open Channel</a>
+<a class="cover" href="https://www.youtube.com/@notisastranov" target="_blank" rel="noopener" aria-label="Open YouTube channel"></a>
 </div>
 </div>
 </section>
@@ -366,7 +325,7 @@ function init(){
  if(session?.token)setupRealtime();
  loadLists(); fillSelects(); renderTimeslots();
  const d=new Date();d.setDate(d.getDate()+1);$("date").value=d.toISOString().slice(0,10);if($("time").options.length)$("time").selectedIndex=0;
- C.videoUrl=localStorage.getItem(C.videoStore)||C.videoUrl; $("welcomeVideoInput").value=C.videoUrl; prepareVideoBox(); $("playSoundBtn").onclick=playWelcomeWithSound; $("saveVideoBtn").onclick=saveWelcomeVideo; $("openChannelBtn").onclick=()=>open(C.channel,"_blank","noopener,noreferrer");
+ C.videoUrl=localStorage.getItem(C.videoStore)||C.videoUrl; $("welcomeVideoInput").value=C.videoUrl; applyVideo(); $("saveVideoBtn").onclick=saveWelcomeVideo; $("openChannelBtn").onclick=()=>open(C.channel,"_blank","noopener,noreferrer");
  $("loginToggle").onclick=()=>$("loginBox").classList.toggle("open");
  document.querySelectorAll("[data-role]").forEach(b=>b.onclick=e=>login(e.currentTarget.dataset.role));
  $("logoutBtn").onclick=()=>{session=null;localStorage.removeItem(C.session);toast("Logged out");render()};
@@ -397,21 +356,14 @@ function init(){
 
 }
 
-function prepareVideoBox(){
+function applyVideo(){
  const box=$("videoBox");
  if(!box)return;
- box.classList.remove("playing");
- if(!box.querySelector("#playSoundBtn")){
-  box.innerHTML=`<div class="empty">YouTube Channel</div><button class="videoStartButton" id="playSoundBtn" type="button">▶ Play Welcome Video With Sound</button><a class="channelLink" href="${C.channel}" target="_blank" rel="noopener">Open Channel</a>`;
-  $("playSoundBtn").onclick=playWelcomeWithSound;
+ if(C.videoUrl){
+  box.innerHTML=`<iframe src="${ytSrc(C.videoUrl)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe><a class="cover" href="${C.channel}" target="_blank" rel="noopener" aria-label="Open YouTube channel"></a>`;
+ }else{
+  box.innerHTML=`<div class="empty">YouTube Channel</div><a class="cover" href="${C.channel}" target="_blank" rel="noopener" aria-label="Open YouTube channel"></a>`;
  }
-}
-function playWelcomeWithSound(){
- const box=$("videoBox");
- if(!box)return;
- if(!C.videoUrl){toast("Set the welcome video URL first.");return}
- box.classList.add("playing");
- box.innerHTML=`<iframe src="${ytSrc(C.videoUrl)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe><a class="channelLink" href="${C.channel}" target="_blank" rel="noopener">Open Channel</a>`;
 }
 function saveWelcomeVideo(){
  if(!session||session.role!=="admin")return toast("Admin only.");
@@ -419,9 +371,8 @@ function saveWelcomeVideo(){
  if(!url)return toast("Paste a YouTube video URL first.");
  C.videoUrl=url;
  localStorage.setItem(C.videoStore,url);
- prepareVideoBox();
- $("playSoundBtn").onclick=playWelcomeWithSound;
- toast("Welcome video updated. Press the red play button to start with sound.");
+ applyVideo();
+ toast("Welcome video updated.");
 }
 
 
@@ -741,7 +692,7 @@ function download(name,text,type){const a=document.createElement("a"),u=URL.crea
 
 function ytSrc(url){
  const base=embed(url), sep=base.includes("?")?"&":"?";
- return base+sep+"autoplay=1&mute=0&rel=0";
+ return base+sep+"autoplay=1&mute=1&rel=0";
 }
 function embed(url){
  try{
