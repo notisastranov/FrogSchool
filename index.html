@@ -830,6 +830,129 @@ body::before {
   }
 }
 
+
+/* Final layout correction: no giant hero block, YouTube first, booking second */
+main#top {
+  display: grid;
+  gap: 14px;
+}
+
+main#top > .grid.two {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+  margin-top: 0 !important;
+}
+
+.youtube-section {
+  order: 1;
+}
+
+.booking-panel {
+  order: 2;
+}
+
+.auth-panel {
+  order: 3;
+}
+
+#reservationsPanel {
+  order: 4;
+}
+
+.youtube-card {
+  grid-template-columns: 1fr !important;
+}
+
+.youtube-frame-shell {
+  min-height: clamp(220px, 46vw, 560px);
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  padding: 0;
+}
+
+.youtube-frame-shell iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: none;
+  z-index: 2;
+}
+
+.youtube-frame-shell.loaded iframe {
+  display: block;
+}
+
+.youtube-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(2,9,18,.28), rgba(2,9,18,.80)),
+    radial-gradient(circle at 50% 42%, rgba(87,208,255,.18), transparent 18rem);
+}
+
+.youtube-placeholder strong {
+  font-family: var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #f4fbff;
+  font-size: clamp(18px, 4vw, 32px);
+}
+
+.youtube-placeholder span {
+  color: var(--blue);
+  font-family: var(--mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.youtube-frame-shell.loaded .youtube-placeholder {
+  display: none;
+}
+
+.video-copy {
+  max-width: 900px;
+}
+
+.video-copy h3 {
+  font-size: clamp(20px, 4.5vw, 34px);
+}
+
+@media (min-width: 900px) {
+  .youtube-card {
+    grid-template-columns: minmax(0, 1.55fr) minmax(300px, .65fr) !important;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 720px) {
+  .app {
+    padding-top: 6px;
+  }
+
+  .youtube-frame-shell {
+    min-height: 220px;
+  }
+
+  .panel-body {
+    padding: 12px;
+  }
+
+  .topbar {
+    align-items: center;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -852,130 +975,33 @@ body::before {
     </header>
 
     <main id="top">
-      <section class="hero" aria-label="FrogSchool hero">
-        <div class="hero-water"></div>
-
-        <svg class="shield-ghost" viewBox="0 0 240 300" aria-hidden="true">
-          <path d="M22 12 H218 Q232 12 232 26 V196 Q232 244 120 288 Q8 244 8 196 V26 Q8 12 22 12Z" fill="none" stroke="rgba(87,208,255,.72)" stroke-width="4"/>
-          <text x="120" y="70" text-anchor="middle" font-size="34" font-family="Arial Black, Arial" fill="rgba(87,208,255,.5)">Astranov</text>
-          <text x="120" y="250" text-anchor="middle" font-size="28" font-family="Arial Black, Arial" fill="rgba(87,208,255,.45)">FrogSchool</text>
-          <g fill="rgba(87,208,255,.38)">
-            <path d="M66 94l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2z"/>
-            <path d="M120 88l8 17 18 2-13 13 3 18-16-8-16 8 3-18-13-13 18-2z"/>
-            <path d="M174 94l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2z"/>
-          </g>
-        </svg>
-
-        <div class="frogman" aria-hidden="true">
-          <svg viewBox="0 0 420 690">
-            <defs>
-              <linearGradient id="suit" x1="0" x2="1" y1="0" y2="1">
-                <stop stop-color="#172d47"/>
-                <stop offset=".55" stop-color="#07111d"/>
-                <stop offset="1" stop-color="#02060c"/>
-              </linearGradient>
-              <linearGradient id="metal" x1="0" x2="1">
-                <stop stop-color="#dbe8f2"/>
-                <stop offset=".34" stop-color="#5b6c7c"/>
-                <stop offset=".7" stop-color="#0b121b"/>
-                <stop offset="1" stop-color="#eaf6ff"/>
-              </linearGradient>
-            </defs>
-            <ellipse cx="220" cy="644" rx="138" ry="23" fill="rgba(87,208,255,.18)"/>
-            <path d="M202 64 C250 62 286 94 287 144 C288 193 257 225 211 224 C166 223 134 190 137 145 C140 99 161 66 202 64Z" fill="url(#suit)" stroke="rgba(87,208,255,.28)" stroke-width="2"/>
-            <path d="M164 126 C166 96 188 79 215 80 C244 81 265 101 265 129 C253 114 234 110 215 110 C194 110 176 114 164 126Z" fill="#01040a"/>
-            <path d="M166 130 C185 117 245 117 264 130 C259 157 242 170 215 170 C189 170 173 158 166 130Z" fill="#050912" stroke="rgba(214,235,255,.4)" stroke-width="3"/>
-            <ellipse cx="195" cy="140" rx="19" ry="11" fill="rgba(198,237,255,.28)"/>
-            <ellipse cx="235" cy="140" rx="19" ry="11" fill="rgba(198,237,255,.22)"/>
-            <circle cx="215" cy="181" r="24" fill="#01040a" stroke="url(#metal)" stroke-width="4"/>
-            <path d="M190 183 C148 204 141 231 149 271" stroke="#0b0f16" stroke-width="19" fill="none" stroke-linecap="round"/>
-            <path d="M240 183 C290 198 304 228 294 273" stroke="#0b0f16" stroke-width="19" fill="none" stroke-linecap="round"/>
-
-            <path d="M131 224 C151 193 181 181 215 181 C250 181 278 194 300 224 C323 286 323 381 294 458 C272 497 158 497 136 458 C107 379 108 286 131 224Z" fill="url(#suit)" stroke="rgba(87,208,255,.22)" stroke-width="2"/>
-            <path d="M160 226 C184 211 247 211 272 226 L259 326 L170 326Z" fill="#040a13" stroke="rgba(87,208,255,.24)"/>
-            <g stroke="rgba(87,208,255,.25)" stroke-width="10" stroke-linecap="round">
-              <path d="M145 245 L123 363"/>
-              <path d="M285 245 L307 363"/>
-            </g>
-            <g stroke="#050912" stroke-width="28" stroke-linecap="round">
-              <path d="M126 240 C82 301 74 383 103 448"/>
-              <path d="M304 240 C350 304 357 384 324 448"/>
-            </g>
-            <g fill="#050912" stroke="rgba(214,235,255,.24)" stroke-width="2">
-              <path d="M95 442 C106 432 123 435 130 448 C126 469 103 477 88 462 C83 454 86 448 95 442Z"/>
-              <path d="M324 448 C331 435 348 432 359 442 C368 448 371 454 366 462 C351 477 328 469 324 448Z"/>
-            </g>
-
-            <rect x="136" y="298" width="160" height="26" rx="8" fill="#050912" stroke="rgba(214,235,255,.25)"/>
-            <g fill="none" stroke="url(#metal)" stroke-width="5">
-              <path d="M164 198 L138 319"/>
-              <path d="M266 198 L291 319"/>
-              <path d="M137 318 L294 318"/>
-            </g>
-            <g fill="url(#metal)">
-              <rect x="148" y="244" width="22" height="12" rx="3"/>
-              <rect x="258" y="244" width="22" height="12" rx="3"/>
-              <rect x="192" y="315" width="46" height="18" rx="4"/>
-            </g>
-
-            <rect x="286" y="160" width="70" height="240" rx="29" fill="url(#metal)" stroke="rgba(87,208,255,.26)" stroke-width="3"/>
-            <rect x="298" y="172" width="45" height="217" rx="19" fill="#050912" opacity=".68"/>
-            <path d="M268 182 C310 203 324 244 309 304" stroke="#080c13" stroke-width="14" fill="none" stroke-linecap="round"/>
-            <path d="M159 453 C139 516 138 583 157 633 L205 633 C206 567 207 507 200 465Z" fill="url(#suit)" stroke="rgba(87,208,255,.2)" stroke-width="2"/>
-            <path d="M273 453 C292 516 294 583 275 633 L227 633 C226 567 225 507 232 465Z" fill="url(#suit)" stroke="rgba(87,208,255,.2)" stroke-width="2"/>
-            <g fill="#050912" stroke="rgba(214,235,255,.18)">
-              <path d="M155 626 C122 628 96 641 88 655 C123 667 175 657 205 637Z"/>
-              <path d="M276 626 C309 628 335 641 343 655 C308 667 256 657 226 637Z"/>
-            </g>
-
-            <g transform="translate(174 334)">
-              <path d="M23 0 C8 64 4 120 12 176 C31 188 55 184 66 169 C58 105 51 47 45 0Z" fill="#050912" stroke="rgba(214,235,255,.24)" stroke-width="2"/>
-              <path d="M86 0 C101 64 105 120 97 176 C78 188 54 184 43 169 C51 105 58 47 64 0Z" fill="#050912" stroke="rgba(214,235,255,.24)" stroke-width="2"/>
-              <path d="M33 17 C30 62 29 114 36 158" stroke="rgba(87,208,255,.18)" stroke-width="4"/>
-              <path d="M78 17 C81 62 82 114 75 158" stroke="rgba(87,208,255,.18)" stroke-width="4"/>
-            </g>
-
-            <g transform="translate(261 238) scale(.36)">
-              <path d="M24 17 H216 Q228 17 228 29 V218 Q228 259 120 304 Q12 259 12 218 V29 Q12 17 24 17Z" fill="#07111e" stroke="#d6b25d" stroke-width="6"/>
-              <text x="120" y="58" text-anchor="middle" font-size="30" font-family="Arial Black" fill="#d6b25d">Astranov</text>
-              <g fill="#d6b25d"><path d="M66 78l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2z"/><path d="M120 74l8 17 18 2-13 13 3 18-16-8-16 8 3-18-13-13 18-2z"/><path d="M174 78l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2z"/></g>
-              <path d="M85 138 C88 106 100 92 120 92 C140 92 152 106 155 138 C160 170 146 203 120 209 C94 203 80 170 85 138Z" fill="#168dff"/>
-              <path d="M88 145 C63 140 53 124 51 104 C53 95 62 96 65 104 C69 119 76 127 92 130Z" fill="#168dff"/>
-              <path d="M152 130 C168 127 175 119 179 104 C182 96 191 95 193 104 C191 124 181 140 152 145Z" fill="#168dff"/>
-              <text x="120" y="171" text-anchor="middle" font-size="58" font-family="Arial Black" fill="#d6b25d">5</text>
-              <text x="120" y="270" text-anchor="middle" font-size="29" font-family="Arial Black" fill="#d6b25d">FrogSchool</text>
-            </g>
-          </svg>
-        </div>
-
-        <div class="hero-copy">
-          <h2 class="headline">Astranov.Eu <small>FrogSchool.Eu</small></h2>
-          <p>Reservations, instructor assignments, agent bookings, customer groups and daily operations in one compact academy cockpit.</p>
-          <div class="hero-row">
-            <a class="primary-btn" href="#booking">Book session</a>
-            <a class="ghost-btn" href="#reservationsPanel">View reservations</a>
-            <span class="pill">Mobile first</span>
-            <span class="pill">Local demo data</span>
-          </div>
-        </div>
-      </section>
-
       <div class="grid two">
         <section class="panel youtube-section" aria-label="YouTube channel preview">
           <div class="panel-head">
-            <h2>Video channel</h2>
-            <span class="pill">Preview</span>
+            <h2>YouTube channel</h2>
+            <span class="pill">Video container</span>
           </div>
           <div class="panel-body youtube-card">
-            <div class="video-thumb">
-              <div class="play" aria-hidden="true"></div>
+            <div class="video-thumb youtube-frame-shell">
+              <iframe
+                id="youtubeFrame"
+                title="Astranov FrogSchool YouTube video"
+                src=""
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+              <div class="youtube-placeholder" id="youtubePlaceholder">
+                <div class="play" aria-hidden="true"></div>
+                <strong>Astranov.Eu FrogSchool.Eu</strong>
+                <span>YouTube video container</span>
+              </div>
             </div>
             <div class="video-copy">
-              <h3>Astranov.Eu<br>FrogSchool.Eu</h3>
-              <p>Training clips, hyperbaric academy briefings, safety knowledge, equipment lessons and operational updates.</p>
+              <h3>Training. Knowledge. Experience.</h3>
+              <p>This is the main video position. Connect the real YouTube embed URL in <b>CONFIG.youtubeUrl</b> and the video will load here.</p>
               <div class="video-actions">
-                <button class="primary-btn" type="button" onclick="toast('Connect your real YouTube channel link in CONFIG.youtubeUrl.')">Watch now</button>
-                <button class="ghost-btn" type="button" onclick="toast('Subscribe button ready. Add your real channel URL in the code config.')">Subscribe</button>
+                <button class="primary-btn" type="button" onclick="loadYouTubeVideo()">Load video</button>
+                <button class="ghost-btn" type="button" onclick="toast('Add your real YouTube channel or video embed URL inside CONFIG.youtubeUrl.')">Channel setup</button>
               </div>
             </div>
           </div>
@@ -1739,6 +1765,35 @@ body::before {
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;")
         .replaceAll("'","&#039;");
+    }
+
+
+    function loadYouTubeVideo(){
+      const frame = document.getElementById("youtubeFrame");
+      const shell = document.querySelector(".youtube-frame-shell");
+      if(!frame || !shell) return;
+      const url = CONFIG.youtubeUrl || "";
+      if(!url){
+        toast("Set CONFIG.youtubeUrl to your YouTube embed URL first.");
+        return;
+      }
+      frame.src = normalizeYouTubeUrl(url);
+      shell.classList.add("loaded");
+    }
+
+    function normalizeYouTubeUrl(url){
+      try{
+        const u = new URL(url);
+        if(u.hostname.includes("youtube.com") && u.pathname === "/watch"){
+          const id = u.searchParams.get("v");
+          return id ? "https://www.youtube.com/embed/" + id : url;
+        }
+        if(u.hostname.includes("youtu.be")){
+          const id = u.pathname.replace("/", "");
+          return id ? "https://www.youtube.com/embed/" + id : url;
+        }
+      }catch(e){}
+      return url;
     }
 
     let toastTimer;
